@@ -1,6 +1,8 @@
 # Screenshot Solver
 
-A lightweight Windows tool that takes a screenshot when you press **Shift 3 times** and sends it to an AI model via OpenRouter to solve the task shown on screen.
+A lightweight cross-platform tool that takes a screenshot when you press **Shift 3 times** and sends it to an AI model via OpenRouter to solve the task shown on screen.
+
+Works on **Windows**, **macOS**, and **Linux**.
 
 ## How it works
 
@@ -31,7 +33,13 @@ echo CONTEXT=Find the task on the screen and solve it >> .env
 python main.py
 ```
 
-> ⚠️ **Run as Administrator** — the `keyboard` library needs admin rights to detect global key presses.
+### Platform-specific notes
+
+| Platform | Requirements |
+|----------|-------------|
+| **Windows** | Run as Administrator (the `pynput` library needs admin rights to detect global key presses) |
+| **macOS** | Grant **Accessibility** permissions (System Settings → Privacy & Security → Accessibility → allow Terminal) and **Screen Recording** permission (for screenshot capture) |
+| **Linux** | Install `python3-xlib` or `python3-tk` if needed |
 
 Press **Ctrl+C** to exit.
 

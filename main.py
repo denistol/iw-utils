@@ -8,7 +8,7 @@ import threading
 import subprocess
 
 import pyperclip
-import keyboard
+from pynput import keyboard
 
 from dotenv import load_dotenv
 from PIL import ImageGrab
@@ -58,7 +58,16 @@ class ScreenshotSolver:
     def handle(self):
         try:
             logger.info("Capturing...")
-            img = ImageGrab.grab()
+            try:
+                img = ImageGrab.grab()
+            except Exception as e:
+                logger.error(
+                    "Screenshot failed: %s. "
+                    "On macOS, grant Screen Recording permission: "
+                    "System Settings → Privacy & Security → Screen Recording",
+                    e,
+                )
+                return
             buf = io.BytesIO()
             img.save(buf, format="JPEG", quality=85)
             b64 = base64.b64encode(buf.getvalue()).decode()
@@ -78,17 +87,30 @@ class ScreenshotSolver:
             logger.exception("Model error")
 
 
+def on_press(key):
+    """Callback for pynput key press events."""
+    try:
+        if key == keyboard.Key.shift or key == keyboard.Key.shift_r:
+            solver.on_shift()
+    except AttributeError:
+        pass
+
+
 if __name__ == "__main__":
     print("Start - Tripple Shift")
     print("Ctrl+C - Exit")
     print()
 
     solver = ScreenshotSolver()
-    keyboard.on_press_key("shift", lambda e: solver.on_shift())
+
+    # Start pynput listener (cross-platform: Windows, macOS, Linux)
+    listener = keyboard.Listener(on_press=on_press)
+    listener.start()
+
     logger.info("Running...")
 
     try:
-        keyboard.wait()
+        listener.join()
     except KeyboardInterrupt:
         print()
         logger.info("Bye...")
