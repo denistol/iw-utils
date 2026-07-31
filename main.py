@@ -69,7 +69,7 @@ class ScreenshotSolver:
                 )
                 return
             buf = io.BytesIO()
-            img.save(buf, format="JPEG", quality=85)
+            img.convert("RGB").save(buf, format="JPEG", quality=85)
             b64 = base64.b64encode(buf.getvalue()).decode()
             logger.info("Captured: (%.0f KB)", len(b64) / 1024 * 0.75)
             logger.info("Sending to OpenRouter...")
